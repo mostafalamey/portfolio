@@ -1,15 +1,19 @@
 import React from "react";
 
-const BentoCard = ({ src, title, description, isComingSoon }) => {
+const Card = ({ src, title, description, isComingSoon, containerClass }) => {
   return (
-    <div className="relative size-full overflow-hidden rounded-md">
-      <video
-        src={src}
-        loop
-        autoPlay
-        muted
-        className="absolute left-0 top-0 size-full object-cover object-center"
-      />
+    <div
+      className={`relative size-full overflow-hidden rounded-md ${containerClass}`}
+    >
+      {src && (
+        <video
+          src={src}
+          loop
+          autoPlay
+          muted
+          className="absolute left-0 top-0 size-full object-cover object-center"
+        />
+      )}
       <div className="relative z-10 flex flex-col size-full justify-between p-5 text-blue-50">
         <div>
           {title && <h1 className="bento-title special-font">{title}</h1>}
@@ -27,4 +31,4 @@ const BentoCard = ({ src, title, description, isComingSoon }) => {
   );
 };
 
-export default BentoCard;
+export default Card;
