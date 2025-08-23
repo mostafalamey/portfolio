@@ -14,6 +14,7 @@ const Hero = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadedVideos, setLoadedVideos] = useState(0);
   const [loadedVideo, setLoadedVideo] = useState(1);
+  const [needsTapToPlay, setNeedsTapToPlay] = useState(false);
 
   const totalVideos = 4;
   const nextVideoRef = useRef(null);
@@ -29,6 +30,21 @@ const Hero = () => {
     setLoadedVideos((prev) => prev + 1);
     // explicitly hide loading overlay as soon as the background video is ready
     setIsLoading(false);
+  };
+
+  // Handle tap-to-play for iOS
+  const handleTapToPlay = async () => {
+    setNeedsTapToPlay(false);
+
+    // Try to play all video elements
+    const videos = document.querySelectorAll("video");
+    for (const video of videos) {
+      try {
+        await video.play();
+      } catch (err) {
+        console.log("Video play failed:", err);
+      }
+    }
   };
 
   const handleVideoLoaded = (index) => {
@@ -60,6 +76,8 @@ const Hero = () => {
   useEffect(() => {
     const t = setTimeout(() => {
       setIsLoading(false);
+      // On mobile, videos often don't autoplay - show tap to play
+      setNeedsTapToPlay(true);
     }, 5000);
     return () => clearTimeout(t);
   }, []);
@@ -135,6 +153,26 @@ const Hero = () => {
           </div>
         </div>
       )}
+      {needsTapToPlay && (
+        <div className="absolute-center z-[100] h-dvh w-screen overflow-hidden bg-black bg-opacity-80">
+          <button
+            onClick={handleTapToPlay}
+            className="flex flex-col items-center justify-center text-white hover:text-yellow-500 transition-colors"
+          >
+            <div className="mb-4 p-6 border-2 border-white rounded-full">
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+            <p className="text-lg font-semibold">Tap to Play Videos</p>
+          </button>
+        </div>
+      )}
       <div
         id="video-frame"
         className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-100"
@@ -181,6 +219,8 @@ const Hero = () => {
             playsInline
             webkit-playsinline="true"
             onLoadedData={handleBackgroundLoaded}
+            onCanPlay={() => setNeedsTapToPlay(false)}
+            onError={() => setNeedsTapToPlay(true)}
             className={`absolute left-0 top-0 size-full object-cover object-center`}
           />
         </div>
