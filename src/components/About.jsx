@@ -32,16 +32,21 @@ const About = () => {
   return (
     <div id="about" className="min-h-screen w-screen">
       <div className="relative mb-8 mt-36 flex flex-col items-center gap-5">
-        <h2 className="text-sm uppercase md:text-[10px] font-general">
-          Welcome to Zentry
+        <h2 className="text-sm uppercase md:text-[10px] font-accent text-stone-600">
+          About Our Studio
         </h2>
         <AnimatedTitle
-          title="Disc<b>o</b>ver the World's <br /> l<b>a</b>rgest shared adventure"
-          containerClass="mt-5 !text-black text-center"
+          title="Craf<b>t</b>ing Spaces that <br /> Insp<b>i</b>re and Transform"
+          containerClass="mt-5 !text-stone-800 text-center"
         />
         <div className="about-subtext">
-          <p>The Game of Games begins your life, now an epic MMOEPG.</p>
-          <p>Zentry unites players from countless games and platforms</p>
+          <p>
+            We believe architecture shapes the way we live, work, and connect.
+          </p>
+          <p>
+            Our designs blend innovation with sustainability and timeless
+            beauty.
+          </p>
         </div>
       </div>
       <div id="clip" className="h-dvh w-screen">

@@ -70,16 +70,15 @@ const Features = () => {
   };
 
   return (
-    <section className="bg-black pb-52">
+    <section id="projects" className="bg-stone-1000 pb-52">
       <div className="container mx-auto px-3 md:px-10">
         <div className="px-5 py-32">
-          <p className="font-circular-web text-blue-50 text-lg">
-            Into the depths of innovation and creativity.
+          <p className="font-body text-stone-600 text-lg">
+            Exploring the depths of architectural innovation and design.
           </p>
-          <p className="max-w-md text-blue-50 opacity-50 text-lg font-circular-web">
-            Immerse yourself in a rich and ever-expanding universe of features
-            designed to enhance your experience. From interactive elements to
-            dynamic content, each feature is crafted to engage and inspire.
+          <p className="max-w-md text-stone-200 opacity-80 text-lg font-body">
+            Discover our comprehensive portfolio of projects that showcase
+            innovation, sustainability, and timeless design principles.
           </p>
         </div>
         <BentoTilt className="border-hsla relative mb-7 h-96 w-full overflow-hidden rounded-md border md:h-[65vh]">
@@ -87,10 +86,10 @@ const Features = () => {
             src="/videos/feature-1.mp4"
             title={
               <>
-                radia<b>n</b>t
+                residen<b>t</b>ial
               </>
             }
-            description="An immersive experience that brings your content to life with stunning visuals and engaging interactions."
+            description="Creating homes that perfectly balance comfort, functionality, and aesthetic appeal for modern living."
             isComingSoon={false}
           />
         </BentoTilt>
@@ -100,10 +99,10 @@ const Features = () => {
               src="/videos/feature-2.mp4"
               title={
                 <>
-                  zig<b>m</b>a
+                  commer<b>c</b>ial
                 </>
               }
-              description="An immersive experience that brings your content to life with stunning visuals and engaging interactions."
+              description="Designing commercial spaces that inspire productivity and reflect your brand's unique identity."
               isComingSoon={false}
             />
           </BentoTilt>
@@ -112,10 +111,10 @@ const Features = () => {
               src="/videos/feature-3.mp4"
               title={
                 <>
-                  n<b>e</b>xus
+                  sustain<b>a</b>ble
                 </>
               }
-              description="An immersive experience that brings your content to life with stunning visuals and engaging interactions."
+              description="Eco-conscious designs that harmonize with nature while maintaining architectural excellence."
               isComingSoon={false}
             />
           </BentoTilt>
@@ -124,18 +123,18 @@ const Features = () => {
               src="/videos/feature-4.mp4"
               title={
                 <>
-                  az<b>u</b>le
+                  inter<b>i</b>or
                 </>
               }
-              description="An immersive experience that brings your content to life with stunning visuals and engaging interactions."
+              description="Interior spaces that seamlessly blend functionality with sophisticated aesthetic sensibilities."
               isComingSoon={false}
             />
           </BentoTilt>
           <BentoTilt className="bento-tilt_2">
             <Card
-              containerClass="flex size-full flex-col justify-between bg-violet-600 p-5"
-              title={"Moore coming soon!"}
-              description="Stay tuned for more exciting features that will enhance your experience and bring new dimensions to your content."
+              containerClass="flex size-full flex-col justify-between bg-sage-500 p-5"
+              title={"More projects soon!"}
+              description="Stay tuned for upcoming architectural projects that will showcase our latest innovations in design and construction."
               isComingSoon={true}
             ></Card>
           </BentoTilt>

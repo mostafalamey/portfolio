@@ -16,15 +16,21 @@ const Card = ({ src, title, description, isComingSoon, containerClass }) => {
           className="absolute left-0 top-0 size-full object-cover object-center"
         />
       )}
-      <div className="relative z-10 flex flex-col size-full justify-between p-5 text-blue-50">
+      <div className="relative z-10 flex flex-col size-full justify-between p-5 text-stone-100">
         <div>
-          {title && <h1 className="bento-title special-font">{title}</h1>}
+          {title && (
+            <h1 className="bento-title display-font !text-stone-100 text-shadow-soft-lg">
+              {title}
+            </h1>
+          )}
           {description && (
-            <p className="mt-3 max-w-64 text-xs md:text-base">{description}</p>
+            <p className="mt-3 max-w-84 text-xs md:text-xl font-body text-blue-gray-200 text-shadow-hard">
+              {description}
+            </p>
           )}
         </div>
         {isComingSoon && (
-          <span className="mt-2 inline-block rounded-full bg-yellow-500 px-2 py-1 text-xs font-semibold text-black">
+          <span className="mt-2 inline-block rounded-full bg-cream-400 px-2 py-1 text-xs font-semibold text-stone-900">
             Coming Soon
           </span>
         )}

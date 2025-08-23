@@ -4,7 +4,7 @@ import Button from "./Button";
 import gsap from "gsap";
 import { TiLocation } from "react-icons/ti";
 
-const navItems = ["Nexus", "Vault", "Prologue", "About", "Contact"];
+const navItems = ["Home", "Projects", "About", "Services", "Contact"];
 
 const NavBar = () => {
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
@@ -65,6 +65,11 @@ const NavBar = () => {
               title="Projects"
               rightIcon={<TiLocation />}
               containerClass="bg-blue-50 md:flex hidden items-center justify-center gap-1"
+              onClick={() =>
+                document
+                  .getElementById("projects")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
             ></Button>
           </div>
 

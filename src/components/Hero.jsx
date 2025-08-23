@@ -158,18 +158,20 @@ const Hero = () => {
   const getImageSrc = (Index) => {
     // Use existing gallery images as fallback for mobile
     const imageMap = {
-      0: "/img/gallery-1.webp",
-      1: "/img/gallery-2.webp",
-      2: "/img/gallery-3.webp",
-      3: "/img/gallery-4.webp",
+      0: "/img/gallery-1.png",
+      1: "/img/gallery-2.png",
+      2: "/img/gallery-3.png",
+      3: "/img/gallery-4.png",
+      4: "/img/gallery-5.png",
+      5: "/img/gallery-6.png",
     };
     return imageMap[Index] || imageMap[1];
   };
 
   return (
-    <div className="relative h-dvh w-screen overflow-x-hidden">
+    <div id="home" className="relative h-dvh w-screen overflow-x-hidden">
       {isLoading && (
-        <div className="absolute-center z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
+        <div className="absolute-center z-[100] h-dvh w-screen overflow-hidden bg-cream-100">
           <div className="three-body absolute-center">
             <div className="three-body__dot"></div>
             <div className="three-body__dot"></div>
@@ -179,7 +181,7 @@ const Hero = () => {
       )}
       <div
         id="video-frame"
-        className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-100"
+        className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-stone-200"
       >
         <div>
           {!isMobile && (
@@ -238,28 +240,28 @@ const Hero = () => {
             />
           )}
         </div>
-        <h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-100">
-          G<b>a</b>ming
+        <h1 className="display-font hero-heading absolute bottom-5 right-5 z-40 !text-stone-200 text-shadow-soft-xl">
+          Archi<b>t</b>ecture
         </h1>
         <div className="absolute bottom-0 left-0 top-0 z-40 size-full">
           <div className="mt-24 px-5 sm:px-10">
-            <h1 className="special-font hero-heading text-blue-100">
-              redefi<b>n</b>e
+            <h1 className="display-font hero-heading !text-blue-gray-200 text-shadow-soft-xl">
+              designing
             </h1>
-            <p className="mb-5 max-w-64 font-robert-regular text-blue-100">
-              Enter the Metagame Layer <br /> Unleash the Play Economy
+            <p className="mb-5 max-w-84 font-body text-white text-xl text-shadow-soft-lg">
+              Crafting Spaces that Inspire <br /> Architecture Beyond Boundaries
             </p>
             <Button
-              id="watch-trailer"
-              title="Watch Trailer"
+              id="view-portfolio"
+              title="View Portfolio"
               leftIcon={<TiLocationArrow />}
-              containerClass="bg-yellow-500 flex-center gap-2"
+              containerClass="bg-sage-500 flex-center gap-2 hover:bg-sage-600 transition-colors"
             />
           </div>
         </div>
       </div>
-      <h1 className="special-font hero-heading absolute bottom-5 right-5 text-black">
-        G<b>a</b>ming
+      <h1 className="display-font hero-heading absolute bottom-5 right-5 text-stone-200 text-shadow-soft-lg">
+        Archi<b>t</b>ecture
       </h1>
     </div>
   );

@@ -1,13 +1,21 @@
 import React from "react";
 
-const Button = ({ id, title, rightIcon, leftIcon, containerClass }) => {
+const Button = ({
+  id,
+  title,
+  rightIcon,
+  leftIcon,
+  containerClass,
+  onClick,
+}) => {
   return (
     <button
       id={id}
-      className={`group relative z-10 w-fit flex items-center cursor-pointer overflow-hidden rounded-full bg-violet-50 px-7 py-3 text-black ${containerClass}`}
+      onClick={onClick}
+      className={`group relative z-10 w-fit flex items-center cursor-pointer overflow-hidden rounded-full bg-stone-100 px-7 py-3 text-stone-800 hover:bg-stone-200 transition-colors duration-300 ${containerClass}`}
     >
       {leftIcon}
-      <span className="relative overflow-hidden font-general text-xs uppercase">
+      <span className="relative overflow-hidden font-accent text-xs uppercase font-medium">
         <div>{title}</div>
       </span>
       {rightIcon}

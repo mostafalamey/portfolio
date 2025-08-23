@@ -17,19 +17,19 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="w-screen py-4 bg-violet-500 text-black">
+    <footer className="w-screen py-4 bg-stone-200 text-stone-700">
       <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 md:flex-row">
-        <p className="text-center text-sm md:text-left">
-          &copy; 2023 Your Company. All rights reserved.
+        <p className="text-center text-sm md:text-left font-body">
+          &copy; 2025 Architecture Studio. All rights reserved.
         </p>
         <div className="flex justify-center gap-4 md:justify-start">
-          {links.map((link) => (
+          {links.map((link, index) => (
             <a
-              key={link}
+              key={link.href}
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors duration-500 ease-in-out text-black hover:text-white"
+              className="transition-colors duration-500 ease-in-out text-stone-600 hover:text-sage-600"
             >
               {link.icon}
             </a>
@@ -37,7 +37,7 @@ const Footer = () => {
         </div>
         <a
           href="#privacy-policy"
-          className="text-center text-sm hover:underline md:text-right"
+          className="text-center text-sm hover:underline md:text-right font-body text-stone-600 hover:text-sage-600"
         >
           Privacy Policy
         </a>

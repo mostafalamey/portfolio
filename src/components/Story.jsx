@@ -49,17 +49,20 @@ const Story = () => {
   };
 
   return (
-    <section className="min-h-dvh w-screen bg-black text-blue-50">
+    <section
+      id="services"
+      className="min-h-dvh w-screen bg-stone-1000 text-stone-800"
+    >
       <div className="flex size-full flex-col items-center py-10 pb-24">
-        <p className="font-general text-sm uppercase md:text-[10px]">
-          the multiverse awaits
+        <p className="font-accent text-sm uppercase md:text-[10px] text-stone-600">
+          our design philosophy
         </p>
         <div className="relative size-full">
           <AnimatedTitle
-            title="the Story of<br /> a hidden realms"
+            title="The Story of<br /> Timeless Design"
             sectionId="story"
             containerClass="mt-5 pointer-events-none
-          mix-blend-difference relative z-10 text-center"
+          mix-blend-difference relative z-10 text-center !text-stone-200"
           />
           <div className="story-img-container">
             <div className="story-img-mask">
@@ -71,7 +74,7 @@ const Story = () => {
                   onMouseEnter={handleMouseLeave}
                   onMouseMove={handleMouseMove}
                   src="/img/entrance.webp"
-                  alt="entrance"
+                  alt="architectural design"
                   className="object-contain"
                 />
               </div>
@@ -81,15 +84,15 @@ const Story = () => {
         </div>
         <div className="-mt-80 flex w-full justify-center md:-mt-64 md:me-44 md:justify-end">
           <div className="flex h-full w-fit flex-col items-center md:items-start">
-            <p className="mt-3 max-w-sm text-center font-circular-web text-violet-50 md:text-start">
-              Where realms converge, lies Zentry and the boundless pillar.
-              Discover its secrets and shape your destiny amidst infinite
-              possibilities.
+            <p className="mt-3 max-w-sm text-center font-body text-stone-600 md:text-start">
+              Where innovation meets tradition, we create architectural
+              masterpieces. Discover our approach to designing spaces that
+              inspire and endure through generations.
             </p>
             <Button
-              id="realm-button"
-              title="Enter the Realm"
-              containerClass="mt-5"
+              id="story-button"
+              title="Learn Our Story"
+              containerClass="mt-5 bg-sage-500 hover:bg-sage-600 transition-colors"
             ></Button>
           </div>
         </div>

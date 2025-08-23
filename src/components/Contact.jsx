@@ -12,7 +12,7 @@ const Contact = () => {
 
   return (
     <div id="contact" className="my-20 min-h-96 w-screen px-10">
-      <div className="relative rounded-lg bg-black py-24 text-blue-50 sm:overflow-hidden">
+      <div className="relative rounded-lg bg-stone-800 py-24 text-cream-100 sm:overflow-hidden">
         <div className="absolute -left-20 top-0 hidden h-full w-72 overflow-hidden sm:block lg:left-20 lg:w-96">
           <ImageClipBox
             src="img/contact-1.webp"
@@ -34,14 +34,16 @@ const Contact = () => {
           />
         </div>
         <div className="flex flex-col items-center text-center">
-          <p className="font-general text-[10px] uppercase">
-            We'd love to hear from you!
+          <p className="font-accent text-[10px] uppercase text-stone-300">
+            Ready to start your project?
           </p>
-          <p className="special-font mt-10 w-full font-zentry text-5xl md:text-[6rem]">
-            Let's build the <br /> new era of digital <br /> experiences
-            together.
+          <p className="display-font mt-10 w-full font-display text-3xl md:text-6xl">
+            Let's create <br /> architectural <br /> excellence together.
           </p>
-          <Button title="Get in Touch" containerClass="mt-10 cursor-pointer" />
+          <Button
+            title="Start Your Project"
+            containerClass="mt-10 cursor-pointer bg-sage-500 hover:bg-sage-600 transition-colors"
+          />
         </div>
       </div>
     </div>
