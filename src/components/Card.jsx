@@ -35,6 +35,10 @@ const Card = ({ src, title, description, isComingSoon, containerClass }) => {
           </span>
         )}
       </div>
+      <div
+        className="absolute left-0 top-0 z-5 size-full"
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}
+      ></div>
     </div>
   );
 };
