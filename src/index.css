@@ -311,3 +311,291 @@ body {
   text-shadow: 0 8px 16px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3),
     0 1px 3px rgba(0, 0, 0, 0.2);
 }
+
+.shadow-soft {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-soft-lg {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Carousel */
+.carousel {
+  @apply relative w-screen h-dvh z-0  overflow-hidden;
+}
+
+.carousel .list .item {
+  @apply absolute inset-0 min-w-full h-full;
+}
+
+.carousel .list .item img {
+  @apply object-cover object-center w-full h-full;
+}
+
+.carousel .list .item .content {
+  @apply absolute top-[12%] left-[50%] -translate-x-[50%] w-[80%] pr-[30%] box-border text-sage-100 text-shadow-lg md:top-[20%];
+}
+
+.carousel .list .item .content .author {
+  @apply text-2xl font-bold tracking-[10px];
+}
+
+.carousel .list .item .content .title,
+.carousel .list .item .content .topic {
+  @apply text-5xl font-black mb-4 md:text-8xl;
+}
+
+.carousel .list .item .content .topic {
+  @apply text-3xl font-bold mb-4 text-orange-600 md:text-6xl;
+}
+
+.carousel .list .item .content .des {
+  @apply text-base max-w-xl text-justify md:text-xl;
+}
+
+.carousel .list .item .content .buttons {
+  @apply mt-4 flex space-x-4;
+}
+
+.carousel .list .item .content .buttons button {
+  @apply px-4 py-2 bg-white text-sage-900 text-sm tracking-wider font-semibold rounded-lg shadow-md border border-white transition-all duration-300 hover:bg-black/35 hover:text-white hover:border-white;
+}
+
+.carousel .list .item .content .buttons button:nth-child(2) {
+  @apply bg-black/35 border border-white text-white transition-all duration-300 hover:bg-white hover:text-sage-900;
+}
+
+/* Thumbnail */
+.thumbnail {
+  @apply absolute bottom-[50px] left-[70%] max-w-max flex z-50 gap-[20px];
+}
+
+.thumbnail .item {
+  @apply relative w-[150px] h-[220px] flex-shrink-0 overflow-hidden rounded-2xl text-sage-100;
+}
+
+.thumbnail .item img {
+  @apply object-cover object-center w-full h-full;
+}
+
+.thumbnail .item .content {
+  @apply absolute bottom-[10px] left-[10px] right-[10px] text-sm;
+}
+
+.thumbnail .item .content .title {
+  @apply font-bold;
+}
+
+/* Arrows */
+.arrows {
+  @apply absolute top-[80%] right-[52%] w-[300px] max-w-[30%] flex gap-[10px] z-50 text-sage-100;
+}
+
+.arrows button {
+  @apply w-12 h-12 flex items-center justify-center bg-blue-gray-700 text-sage-200 rounded-full shadow-md text-2xl font-display font-bold transition-all duration-500 hover:bg-blue-gray-200
+  hover:text-blue-gray-900;
+}
+
+/* First item */
+.carousel .list .item:nth-child(1) {
+  @apply z-1;
+}
+
+.carousel .list .item:nth-child(1) .author,
+.carousel .list .item:nth-child(1) .title,
+.carousel .list .item:nth-child(1) .topic,
+.carousel .list .item:nth-child(1) .buttons,
+.carousel .list .item:nth-child(1) .des {
+  transform: translateY(50px);
+  filter: blur(10px);
+  opacity: 0;
+  animation: showContent 0.5s linear 1 forwards;
+}
+
+@keyframes showContent {
+  0% {
+    transform: translateY(50px);
+    filter: blur(10px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+.carousel .list .item:nth-child(1) .title {
+  animation-delay: 1.3s;
+}
+
+.carousel .list .item:nth-child(1) .topic {
+  animation-delay: 1.4s;
+}
+
+.carousel .list .item:nth-child(1) .buttons {
+  animation-delay: 1.5s;
+}
+
+.carousel .list .item:nth-child(1) .des {
+  animation-delay: 1.6s;
+}
+
+/* Effect Next Click */
+.carousel.next .list .item:nth-child(1) img {
+  width: 150px;
+  height: 220px;
+  position: absolute;
+  left: 50%;
+  bottom: 50px;
+  border-radius: 20px;
+  animation: showImage 0.5s linear 1 forwards;
+}
+
+@keyframes showImage {
+  0% {
+    width: 150px;
+    height: 220px;
+    position: absolute;
+    left: 70%;
+    bottom: 50px;
+    border-radius: 20px;
+  }
+  100% {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    bottom: 0;
+    border-radius: 0;
+  }
+}
+
+.carousel.next .thumbnail .item:nth-last-child(1) {
+  width: 0;
+  overflow: hidden;
+  animation: showThumbnail 0.5s linear 1 forwards;
+}
+
+@keyframes showThumbnail {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 150px;
+  }
+}
+
+.carousel.next .thumbnail {
+  transform: translateX(150px);
+  animation: transformThumbnail 0.5s linear 1 forwards;
+}
+
+@keyframes transformThumbnail {
+  0% {
+    transform: translateX(150px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Effect Previous Click */
+.carousel.prev .list .item:nth-child(2) {
+  z-index: 2;
+}
+
+.carousel.prev .list .item:nth-child(2) img {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  animation: outImage 0.5s linear 1 forwards;
+}
+
+@keyframes outImage {
+  0% {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    bottom: 0;
+    border-radius: 0;
+  }
+  100% {
+    width: 150px;
+    height: 220px;
+    position: absolute;
+    left: 70%;
+    bottom: 50px;
+    border-radius: 20px;
+  }
+}
+
+.carousel.prev .thumbnail .item:nth-child(1) {
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
+  animation: showThumbnail 0.5s linear 1 forwards;
+}
+
+.carousel .list .item:nth-child(2) .author,
+.carousel .list .item:nth-child(2) .title,
+.carousel .list .item:nth-child(2) .topic,
+.carousel .list .item:nth-child(2) .buttons,
+.carousel .list .item:nth-child(2) .des {
+  animation: contentOut 0.5s linear 1 forwards;
+}
+
+@keyframes contentOut {
+  0% {
+    transform: translateY(0);
+    filter: blur(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-150px);
+    filter: blur(20px);
+    opacity: 0;
+  }
+}
+
+.carousel.next .arrows button,
+.carousel.prev .arrows button {
+  pointer-events: none;
+}
+
+.time {
+  width: 0;
+  height: 5px;
+  background-color: #9bb189;
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+}
+
+.carousel.next .time,
+.carousel.prev .time {
+  width: 100%;
+  animation: progress 2s linear 1 forwards;
+}
+
+@keyframes progress {
+  0% {
+    width: 100;
+  }
+  100% {
+    width: 0;
+  }
+}
+
+/* @media screen and (max-width: 678px) {
+  .carousel .list .item .content {
+    padding-right: 0;
+  }
+
+  .carousel .list .item .content .title {
+    font-size: 40px;
+  }
+} */

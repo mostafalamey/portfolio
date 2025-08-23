@@ -16,31 +16,31 @@ const Features = () => {
       };
     }, []);
 
-    const handleMouseMove = (e) => {
-      if (!itemRef.current) return;
-      setIsLeaving(false);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    // const handleMouseMove = (e) => {
+    //   if (!itemRef.current) return;
+    //   setIsLeaving(false);
+    //   if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
-      rafRef.current = requestAnimationFrame(() => {
-        const rect = itemRef.current.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const cx = rect.width / 2;
-        const cy = rect.height / 2;
+    //   rafRef.current = requestAnimationFrame(() => {
+    //     const rect = itemRef.current.getBoundingClientRect();
+    //     const x = e.clientX - rect.left;
+    //     const y = e.clientY - rect.top;
+    //     const cx = rect.width / 2;
+    //     const cy = rect.height / 2;
 
-        const maxTilt = 5; // degrees
-        const dx = (x - cx) / cx; // -1 .. 1
-        const dy = (y - cy) / cy;
+    //     const maxTilt = 5; // degrees
+    //     const dx = (x - cx) / cx; // -1 .. 1
+    //     const dy = (y - cy) / cy;
 
-        const rotY = dx * maxTilt; // rotate around Y (left/right)
-        const rotX = -dy * maxTilt; // rotate around X (up/down), invert for natural feel
-        const translateZ = 5; // small pop-out
+    //     const rotY = dx * maxTilt; // rotate around Y (left/right)
+    //     const rotX = -dy * maxTilt; // rotate around X (up/down), invert for natural feel
+    //     const translateZ = 5; // small pop-out
 
-        setTransformStyle(
-          `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${translateZ}px)`
-        );
-      });
-    };
+    //     setTransformStyle(
+    //       `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${translateZ}px)`
+    //     );
+    //   });
+    // };
 
     const handleMouseLeave = () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -54,7 +54,7 @@ const Features = () => {
       <div
         className={`${className}`}
         ref={itemRef}
-        onMouseMove={handleMouseMove}
+        // onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{
           transform: transformStyle,

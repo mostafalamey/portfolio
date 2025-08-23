@@ -4,6 +4,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Button from "./Button";
 import { TiLocationArrow } from "react-icons/ti";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 // Custom hook to detect mobile devices
 const useIsMobile = () => {
@@ -33,46 +34,179 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
   const isMobile = useIsMobile();
-  const [currentIndex, setCurrentIndex] = useState(1);
-  const [hasClicked, setHasClicked] = useState(false);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [loadedVideos, setLoadedVideos] = useState(0);
-  const [loadedVideo, setLoadedVideo] = useState(1);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const totalVideos = 4;
-  const nextVideoRef = useRef(null);
-  const miniVideoRef = useRef(null);
-  const pendingIndexRef = useRef(null);
+  const backgroundVideoRef = useRef(null);
+  const expandingVideoRef = useRef(null);
+  const carouselRef = useRef(null);
+  const thumbnailRefs = useRef([]);
 
   const handleVideoLoad = () => {
     setLoadedVideos((prev) => prev + 1);
   };
 
-  // When the full-screen/background video loads we should stop showing the loader
   const handleBackgroundLoaded = () => {
     setLoadedVideos((prev) => prev + 1);
-    // explicitly hide loading overlay as soon as the background video is ready
     setIsLoading(false);
   };
 
-  const handleVideoLoaded = (index) => {
-    const idx = typeof index === "number" ? index : currentIndex;
-    setLoadedVideo(idx % totalVideos);
+  // Get the visible thumbnails in the carousel (4 videos starting from current)
+  const getVisibleVideos = () => {
+    const visible = [];
+    for (let i = 0; i < 4; i++) {
+      const index = (currentVideoIndex + i) % totalVideos;
+      visible.push(index);
+    }
+    return visible;
   };
 
-  const upcomingVideoIndex = (currentIndex + 1) % totalVideos;
+  const handleNext = () => {
+    if (isAnimating) return;
 
-  const handleMiniVideoClick = () => {
-    // Start the expand animation but don't switch the background yet
-    setHasClicked(true);
-    // store the target index so we can commit it after the animation
-    pendingIndexRef.current = upcomingVideoIndex;
-    // immediately update the current index so mini video shows next video
-    setCurrentIndex(upcomingVideoIndex);
-    // ensure the overlay video element uses the correct src for the expanding playback
-    if (nextVideoRef.current) {
-      nextVideoRef.current.src = getVideoSrc(pendingIndexRef.current);
+    setIsAnimating(true);
+
+    // The first (leftmost) thumbnail will expand
+    const expandingIndex = currentVideoIndex;
+    const expandingThumbnail = thumbnailRefs.current[expandingIndex];
+
+    if (!expandingThumbnail || !expandingVideoRef.current) {
+      setIsAnimating(false);
+      return;
     }
+
+    // Set up expanding video
+    expandingVideoRef.current.src = getVideoSrc(expandingIndex);
+
+    // Get thumbnail position
+    const rect = expandingThumbnail.getBoundingClientRect();
+
+    // Position expanding video exactly on thumbnail
+    gsap.set(expandingVideoRef.current, {
+      visibility: "visible",
+      position: "fixed",
+      left: rect.left,
+      top: rect.top,
+      width: rect.width,
+      height: rect.height,
+      borderRadius: "8px",
+      zIndex: 100,
+    });
+
+    // Update current index immediately (moves thumbnail to end)
+    const nextIndex = (currentVideoIndex + 1) % totalVideos;
+    setCurrentVideoIndex(nextIndex);
+
+    // Create animation timeline
+    const tl = gsap.timeline({
+      onComplete: () => {
+        // Update background video
+        if (backgroundVideoRef.current) {
+          backgroundVideoRef.current.src = getVideoSrc(expandingIndex);
+        }
+
+        // Hide expanding video
+        gsap.set(expandingVideoRef.current, { visibility: "hidden" });
+
+        setIsAnimating(false);
+      },
+    });
+
+    // Animate carousel sliding left
+    tl.to(
+      carouselRef.current,
+      {
+        x: -92, // thumbnail width + gap
+        duration: 0.6,
+        ease: "power2.out",
+      },
+      0
+    );
+
+    // Expand thumbnail to fullscreen
+    tl.to(
+      expandingVideoRef.current,
+      {
+        left: 0,
+        top: 0,
+        width: "100vw",
+        height: "100vh",
+        borderRadius: "0px",
+        duration: 1.2,
+        ease: "power2.inOut",
+      },
+      0.3
+    );
+
+    // Reset carousel position
+    tl.set(carouselRef.current, { x: 0 }, 1.1);
+  };
+
+  const handlePrev = () => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
+
+    // Move to previous index first
+    const prevIndex = (currentVideoIndex - 1 + totalVideos) % totalVideos;
+    const expandingIndex = (prevIndex + 3) % totalVideos; // Last visible thumbnail
+
+    setCurrentVideoIndex(prevIndex);
+
+    // Small delay to let DOM update
+    setTimeout(() => {
+      const expandingThumbnail = thumbnailRefs.current[expandingIndex];
+
+      if (!expandingThumbnail || !expandingVideoRef.current) {
+        setIsAnimating(false);
+        return;
+      }
+
+      expandingVideoRef.current.src = getVideoSrc(expandingIndex);
+
+      const rect = expandingThumbnail.getBoundingClientRect();
+
+      gsap.set(expandingVideoRef.current, {
+        visibility: "visible",
+        position: "fixed",
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
+        borderRadius: "8px",
+        zIndex: 100,
+      });
+
+      // Animate carousel sliding from right
+      gsap.fromTo(
+        carouselRef.current,
+        { x: 92 },
+        { x: 0, duration: 0.6, ease: "power2.out" }
+      );
+
+      // Expand to fullscreen
+      gsap.to(expandingVideoRef.current, {
+        left: 0,
+        top: 0,
+        width: "100vw",
+        height: "100vh",
+        borderRadius: "0px",
+        duration: 1.2,
+        ease: "power2.inOut",
+        delay: 0.3,
+        onComplete: () => {
+          if (backgroundVideoRef.current) {
+            backgroundVideoRef.current.src = getVideoSrc(expandingIndex);
+          }
+
+          gsap.set(expandingVideoRef.current, { visibility: "hidden" });
+          setIsAnimating(false);
+        },
+      });
+    }, 50);
   };
 
   useEffect(() => {
@@ -81,31 +215,24 @@ const Hero = () => {
     }
   }, [loadedVideos]);
 
-  // Fallback: if for some reason videos never fire load events (mobile autoplay restrictions),
-  // hide the loader after a short timeout so the page is usable.
   useEffect(() => {
-    // On mobile, skip video loading entirely and hide loader immediately
     if (isMobile) {
       setIsLoading(false);
       return;
     }
 
-    const t = setTimeout(() => {
+    const timeout = setTimeout(() => {
       setIsLoading(false);
     }, 5000);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timeout);
   }, [isMobile]);
 
   useGSAP(
     () => {
-      // Animate the "designing" text on page load
       if (!isLoading) {
         gsap.fromTo(
           "#designing-text",
-          {
-            opacity: 0,
-            y: 50,
-          },
+          { opacity: 0, y: 50 },
           {
             opacity: 1,
             y: 0,
@@ -114,72 +241,23 @@ const Hero = () => {
             ease: "power2.out",
           }
         );
-
-        gsap.fromTo(
-          "#architecture-text",
-          {
-            opacity: 0,
-            x: 50,
-          },
-          {
-            opacity: 1,
-            x: 0,
-            duration: 1.2,
-            delay: 0.3,
-            ease: "power2.out",
-          }
-        );
-      }
-
-      // GSAP animations can be added here
-      // Use hasClicked so we wait to commit state until after animation
-      if (hasClicked) {
-        gsap.set("#next-video", { visibility: "visible" });
-        gsap.to("#next-video", {
-          transformOrigin: "center center",
-          scale: 1,
-          width: "100%",
-          height: "100%",
-          duration: 1,
-          ease: "power1.inOut",
-          onComplete: () => {
-            // commit the pending index to the background video now that expand finished
-            if (pendingIndexRef.current !== null) {
-              handleVideoLoaded(pendingIndexRef.current);
-              pendingIndexRef.current = null;
-              nextVideoRef.current && nextVideoRef.current.play();
-            }
-            // allow future clicks
-            setHasClicked(false);
-          },
-        });
-        gsap.from("#current-video", {
-          transformOrigin: "center center",
-          scale: 0,
-          duration: 1.5,
-          ease: "power1.inOut",
-        });
       }
     },
-    { dependencies: [hasClicked, isLoading], revertOnUpdate: true }
+    { dependencies: [isLoading], revertOnUpdate: true }
   );
 
-  const getVideoSrc = (Index) => {
-    // Use absolute path for files in Vite `public/` so assets resolve correctly
-    return `/videos/h_${Index}.mp4`;
+  const getVideoSrc = (index) => {
+    return `/videos/h_${index}.mp4`;
   };
 
-  const getImageSrc = (Index) => {
-    // Use existing gallery images as fallback for mobile
+  const getImageSrc = (index) => {
     const imageMap = {
       0: "/img/gallery-1.png",
       1: "/img/gallery-2.png",
       2: "/img/gallery-3.png",
       3: "/img/gallery-4.png",
-      4: "/img/gallery-5.png",
-      5: "/img/gallery-6.png",
     };
-    return imageMap[Index] || imageMap[1];
+    return imageMap[index] || imageMap[0];
   };
 
   return (
@@ -193,6 +271,7 @@ const Hero = () => {
           </div>
         </div>
       )}
+
       <div
         id="video-frame"
         className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-stone-200"
@@ -200,40 +279,10 @@ const Hero = () => {
         <div>
           {!isMobile && (
             <>
-              <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
-                <div
-                  onClick={handleMiniVideoClick}
-                  className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
-                >
-                  <video
-                    ref={miniVideoRef}
-                    src={getVideoSrc(upcomingVideoIndex)}
-                    loop
-                    muted
-                    preload="metadata"
-                    playsInline
-                    // include webkit-playsinline for older iOS Safari
-                    webkit-playsinline="true"
-                    id="current-video"
-                    className="size-64 origin-center scale-150 object-cover object-center"
-                    onLoadedData={handleVideoLoad}
-                  />
-                </div>
-              </div>
+              {/* Background Video */}
               <video
-                ref={nextVideoRef}
-                src={getVideoSrc(currentIndex)}
-                loop
-                muted
-                preload="metadata"
-                playsInline
-                webkit-playsinline="true"
-                id="next-video"
-                className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
-                // onLoadedData={handleVideoLoad}
-              />
-              <video
-                src={getVideoSrc(loadedVideo)}
+                ref={backgroundVideoRef}
+                src={getVideoSrc(currentVideoIndex)}
                 preload="auto"
                 autoPlay
                 loop
@@ -241,30 +290,67 @@ const Hero = () => {
                 playsInline
                 webkit-playsinline="true"
                 onLoadedData={handleBackgroundLoaded}
-                className={`absolute left-0 top-0 z-10 size-full object-cover object-center`}
+                className="absolute left-0 top-0 z-10 size-full object-cover object-center"
               />
+
+              {/* Expanding Video Overlay */}
+              <video
+                ref={expandingVideoRef}
+                loop
+                muted
+                playsInline
+                webkit-playsinline="true"
+                className="invisible absolute z-[100] object-cover"
+              />
+
+              {/* Carousel Container */}
+              <div className="absolute bottom-8 right-8 z-50">
+                <div
+                  ref={carouselRef}
+                  className="flex gap-3 mb-4"
+                  style={{ width: "368px" }}
+                >
+                  {getVisibleVideos().map((videoIndex, i) => (
+                    <div
+                      key={`${videoIndex}-${currentVideoIndex}`}
+                      ref={(el) => (thumbnailRefs.current[videoIndex] = el)}
+                      className="relative h-16 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 border-white/30"
+                    >
+                      <video
+                        src={getVideoSrc(videoIndex)}
+                        loop
+                        muted
+                        preload="metadata"
+                        playsInline
+                        webkit-playsinline="true"
+                        className="h-full w-full object-cover"
+                        onLoadedData={handleVideoLoad}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                      <div className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-xs text-white">
+                        {videoIndex + 1}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </>
           )}
+
           {isMobile && (
             <div
               className="absolute left-0 top-0 z-10 size-full bg-cover bg-center bg-no-repeat"
               style={{
-                backgroundImage: `url(${getImageSrc(currentIndex)})`,
+                backgroundImage: `url(${getImageSrc(currentVideoIndex)})`,
               }}
             />
           )}
-          {/* Semi-transparent black overlay using rgba */}
-          <div
-            className="absolute left-0 top-0 z-20 size-full"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}
-          ></div>
+
+          {/* Overlay */}
+          <div className="absolute left-0 top-0 z-20 size-full bg-black/40"></div>
         </div>
-        <h1
-          id="architecture-text"
-          className="display-font hero-heading !text-6xl absolute bottom-5 right-5 z-40 !text-stone-200 text-shadow-soft-xl"
-        >
-          Architecture
-        </h1>
+
+        {/* Content */}
         <div className="absolute bottom-0 left-0 top-0 z-40 size-full">
           <div className="mt-60 md:ml-12 px-8 sm:px-16">
             <h1
@@ -273,15 +359,38 @@ const Hero = () => {
             >
               designing
             </h1>
-            <p className="mb-5 max-w-84 font-body text-white text-xl text-shadow-soft-lg">
+            <p
+              id="architecture-description"
+              className="mb-5 max-w-84 font-body text-white text-xl text-shadow-soft-lg"
+            >
               Crafting Spaces that Inspire <br /> Architecture Beyond Boundaries
             </p>
             <Button
               id="view-portfolio"
               title="View Portfolio"
               leftIcon={<TiLocationArrow />}
-              containerClass="bg-sage-500 flex-center gap-2 hover:bg-sage-600 transition-colors"
+              containerClass="bg-sage-500 flex-center gap-2 hover:bg-sage-600 transition-colors mb-4"
             />
+
+            {/* Navigation Arrows */}
+            {!isMobile && (
+              <div className="flex gap-4">
+                <button
+                  onClick={handlePrev}
+                  disabled={isAnimating}
+                  className="flex h-12 w-12 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition-all hover:bg-black/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <IoIosArrowBack size={20} />
+                </button>
+                <button
+                  onClick={handleNext}
+                  disabled={isAnimating}
+                  className="flex h-12 w-12 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition-all hover:bg-black/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <IoIosArrowForward size={20} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
