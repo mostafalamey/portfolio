@@ -5,16 +5,39 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Button from "./Button";
 import { TiLocationArrow } from "react-icons/ti";
 
+// Custom hook to detect mobile devices
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isMobileDevice =
+        /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+          userAgent.toLowerCase()
+        );
+      const isSmallScreen = window.innerWidth <= 768;
+      setIsMobile(isMobileDevice || isSmallScreen);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  return isMobile;
+};
+
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
+  const isMobile = useIsMobile();
   const [currentIndex, setCurrentIndex] = useState(1);
   const [hasClicked, setHasClicked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadedVideos, setLoadedVideos] = useState(0);
   const [loadedVideo, setLoadedVideo] = useState(1);
-  const [needsTapToPlay, setNeedsTapToPlay] = useState(false);
 
   const totalVideos = 4;
   const nextVideoRef = useRef(null);
@@ -32,21 +55,6 @@ const Hero = () => {
     setIsLoading(false);
   };
 
-  // Handle tap-to-play for iOS
-  const handleTapToPlay = async () => {
-    setNeedsTapToPlay(false);
-
-    // Try to play all video elements
-    const videos = document.querySelectorAll("video");
-    for (const video of videos) {
-      try {
-        await video.play();
-      } catch (err) {
-        console.log("Video play failed:", err);
-      }
-    }
-  };
-
   const handleVideoLoaded = (index) => {
     const idx = typeof index === "number" ? index : currentIndex;
     setLoadedVideo(idx % totalVideos);
@@ -59,6 +67,8 @@ const Hero = () => {
     setHasClicked(true);
     // store the target index so we can commit it after the animation
     pendingIndexRef.current = upcomingVideoIndex;
+    // immediately update the current index so mini video shows next video
+    setCurrentIndex(upcomingVideoIndex);
     // ensure the overlay video element uses the correct src for the expanding playback
     if (nextVideoRef.current) {
       nextVideoRef.current.src = getVideoSrc(pendingIndexRef.current);
@@ -74,13 +84,17 @@ const Hero = () => {
   // Fallback: if for some reason videos never fire load events (mobile autoplay restrictions),
   // hide the loader after a short timeout so the page is usable.
   useEffect(() => {
+    // On mobile, skip video loading entirely and hide loader immediately
+    if (isMobile) {
+      setIsLoading(false);
+      return;
+    }
+
     const t = setTimeout(() => {
       setIsLoading(false);
-      // On mobile, videos often don't autoplay - show tap to play
-      setNeedsTapToPlay(true);
     }, 5000);
     return () => clearTimeout(t);
-  }, []);
+  }, [isMobile]);
 
   useGSAP(
     () => {
@@ -96,9 +110,8 @@ const Hero = () => {
           duration: 1,
           ease: "power1.inOut",
           onComplete: () => {
-            // commit the pending index now that expand finished
+            // commit the pending index to the background video now that expand finished
             if (pendingIndexRef.current !== null) {
-              setCurrentIndex(pendingIndexRef.current);
               handleVideoLoaded(pendingIndexRef.current);
               pendingIndexRef.current = null;
               nextVideoRef.current && nextVideoRef.current.play();
@@ -142,6 +155,17 @@ const Hero = () => {
     return `/videos/h_${Index}.mp4`;
   };
 
+  const getImageSrc = (Index) => {
+    // Use existing gallery images as fallback for mobile
+    const imageMap = {
+      0: "/img/gallery-1.webp",
+      1: "/img/gallery-2.webp",
+      2: "/img/gallery-3.webp",
+      3: "/img/gallery-4.webp",
+    };
+    return imageMap[Index] || imageMap[1];
+  };
+
   return (
     <div className="relative h-dvh w-screen overflow-x-hidden">
       {isLoading && (
@@ -153,76 +177,66 @@ const Hero = () => {
           </div>
         </div>
       )}
-      {needsTapToPlay && (
-        <div className="absolute-center z-[100] h-dvh w-screen overflow-hidden bg-black bg-opacity-80">
-          <button
-            onClick={handleTapToPlay}
-            className="flex flex-col items-center justify-center text-white hover:text-yellow-500 transition-colors"
-          >
-            <div className="mb-4 p-6 border-2 border-white rounded-full">
-              <svg
-                width="48"
-                height="48"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </div>
-            <p className="text-lg font-semibold">Tap to Play Videos</p>
-          </button>
-        </div>
-      )}
       <div
         id="video-frame"
         className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-100"
       >
         <div>
-          <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
-            <div
-              onClick={handleMiniVideoClick}
-              className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
-            >
+          {!isMobile && (
+            <>
+              <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
+                <div
+                  onClick={handleMiniVideoClick}
+                  className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
+                >
+                  <video
+                    ref={miniVideoRef}
+                    src={getVideoSrc(upcomingVideoIndex)}
+                    loop
+                    muted
+                    preload="metadata"
+                    playsInline
+                    // include webkit-playsinline for older iOS Safari
+                    webkit-playsinline="true"
+                    id="current-video"
+                    className="size-64 origin-center scale-150 object-cover object-center"
+                    onLoadedData={handleVideoLoad}
+                  />
+                </div>
+              </div>
               <video
-                ref={miniVideoRef}
-                src={getVideoSrc(upcomingVideoIndex)}
+                ref={nextVideoRef}
+                src={getVideoSrc(currentIndex)}
                 loop
                 muted
                 preload="metadata"
                 playsInline
-                // include webkit-playsinline for older iOS Safari
                 webkit-playsinline="true"
-                id="current-video"
-                className="size-64 origin-center scale-150 object-cover object-center"
-                onLoadedData={handleVideoLoad}
+                id="next-video"
+                className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
+                // onLoadedData={handleVideoLoad}
               />
-            </div>
-          </div>
-          <video
-            ref={nextVideoRef}
-            src={getVideoSrc(currentIndex)}
-            loop
-            muted
-            preload="metadata"
-            playsInline
-            webkit-playsinline="true"
-            id="next-video"
-            className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
-            // onLoadedData={handleVideoLoad}
-          />
-          <video
-            src={getVideoSrc(loadedVideo)}
-            preload="auto"
-            autoPlay
-            loop
-            muted
-            playsInline
-            webkit-playsinline="true"
-            onLoadedData={handleBackgroundLoaded}
-            onCanPlay={() => setNeedsTapToPlay(false)}
-            onError={() => setNeedsTapToPlay(true)}
-            className={`absolute left-0 top-0 size-full object-cover object-center`}
-          />
+              <video
+                src={getVideoSrc(loadedVideo)}
+                preload="auto"
+                autoPlay
+                loop
+                muted
+                playsInline
+                webkit-playsinline="true"
+                onLoadedData={handleBackgroundLoaded}
+                className={`absolute left-0 top-0 size-full object-cover object-center`}
+              />
+            </>
+          )}
+          {isMobile && (
+            <div
+              className="absolute left-0 top-0 size-full bg-cover bg-center bg-no-repeat"
+              style={{
+                backgroundImage: `url(${getImageSrc(currentIndex)})`,
+              }}
+            />
+          )}
         </div>
         <h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-100">
           G<b>a</b>ming
