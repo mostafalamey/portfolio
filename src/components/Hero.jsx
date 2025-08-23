@@ -24,6 +24,13 @@ const Hero = () => {
     setLoadedVideos((prev) => prev + 1);
   };
 
+  // When the full-screen/background video loads we should stop showing the loader
+  const handleBackgroundLoaded = () => {
+    setLoadedVideos((prev) => prev + 1);
+    // explicitly hide loading overlay as soon as the background video is ready
+    setIsLoading(false);
+  };
+
   const handleVideoLoaded = (index) => {
     const idx = typeof index === "number" ? index : currentIndex;
     setLoadedVideo(idx % totalVideos);
@@ -47,6 +54,15 @@ const Hero = () => {
       setIsLoading(false);
     }
   }, [loadedVideos]);
+
+  // Fallback: if for some reason videos never fire load events (mobile autoplay restrictions),
+  // hide the loader after a short timeout so the page is usable.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+    return () => clearTimeout(t);
+  }, []);
 
   useGSAP(
     () => {
@@ -134,6 +150,7 @@ const Hero = () => {
                 src={getVideoSrc(upcomingVideoIndex)}
                 loop
                 muted
+                preload="metadata"
                 playsInline
                 // include webkit-playsinline for older iOS Safari
                 webkit-playsinline="true"
@@ -148,6 +165,7 @@ const Hero = () => {
             src={getVideoSrc(currentIndex)}
             loop
             muted
+            preload="metadata"
             playsInline
             webkit-playsinline="true"
             id="next-video"
@@ -162,8 +180,8 @@ const Hero = () => {
             muted
             playsInline
             webkit-playsinline="true"
+            onLoadedData={handleBackgroundLoaded}
             className={`absolute left-0 top-0 size-full object-cover object-center`}
-            onLoadedData={handleVideoLoad}
           />
         </div>
         <h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-100">
