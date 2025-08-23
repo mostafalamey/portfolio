@@ -10,6 +10,8 @@ const Card = ({ src, title, description, isComingSoon, containerClass }) => {
           src={src}
           loop
           autoPlay
+          playsInline
+          webkit-playsinline="true"
           muted
           className="absolute left-0 top-0 size-full object-cover object-center"
         />

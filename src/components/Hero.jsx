@@ -17,20 +17,29 @@ const Hero = () => {
 
   const totalVideos = 4;
   const nextVideoRef = useRef(null);
+  const miniVideoRef = useRef(null);
+  const pendingIndexRef = useRef(null);
 
   const handleVideoLoad = () => {
     setLoadedVideos((prev) => prev + 1);
   };
 
-  const handleVideoLoaded = () => {
-    setLoadedVideo(currentIndex % totalVideos);
+  const handleVideoLoaded = (index) => {
+    const idx = typeof index === "number" ? index : currentIndex;
+    setLoadedVideo(idx % totalVideos);
   };
 
   const upcomingVideoIndex = (currentIndex + 1) % totalVideos;
 
   const handleMiniVideoClick = () => {
+    // Start the expand animation but don't switch the background yet
     setHasClicked(true);
-    setCurrentIndex(upcomingVideoIndex);
+    // store the target index so we can commit it after the animation
+    pendingIndexRef.current = upcomingVideoIndex;
+    // ensure the overlay video element uses the correct src for the expanding playback
+    if (nextVideoRef.current) {
+      nextVideoRef.current.src = getVideoSrc(pendingIndexRef.current);
+    }
   };
 
   useEffect(() => {
@@ -42,6 +51,7 @@ const Hero = () => {
   useGSAP(
     () => {
       // GSAP animations can be added here
+      // Use hasClicked so we wait to commit state until after animation
       if (hasClicked) {
         gsap.set("#next-video", { visibility: "visible" });
         gsap.to("#next-video", {
@@ -51,11 +61,16 @@ const Hero = () => {
           height: "100%",
           duration: 1,
           ease: "power1.inOut",
-          onStart: () => {
-            nextVideoRef.current.play();
-          },
           onComplete: () => {
-            handleVideoLoaded();
+            // commit the pending index now that expand finished
+            if (pendingIndexRef.current !== null) {
+              setCurrentIndex(pendingIndexRef.current);
+              handleVideoLoaded(pendingIndexRef.current);
+              pendingIndexRef.current = null;
+              nextVideoRef.current && nextVideoRef.current.play();
+            }
+            // allow future clicks
+            setHasClicked(false);
           },
         });
         gsap.from("#current-video", {
@@ -66,7 +81,7 @@ const Hero = () => {
         });
       }
     },
-    { dependencies: [currentIndex], revertOnUpdate: true }
+    { dependencies: [hasClicked], revertOnUpdate: true }
   );
 
   useGSAP(() => {
@@ -89,7 +104,8 @@ const Hero = () => {
   });
 
   const getVideoSrc = (Index) => {
-    return `videos/h_${Index}.mp4`;
+    // Use absolute path for files in Vite `public/` so assets resolve correctly
+    return `/videos/h_${Index}.mp4`;
   };
 
   return (
@@ -114,10 +130,13 @@ const Hero = () => {
               className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
             >
               <video
-                ref={nextVideoRef}
+                ref={miniVideoRef}
                 src={getVideoSrc(upcomingVideoIndex)}
                 loop
                 muted
+                playsInline
+                // include webkit-playsinline for older iOS Safari
+                webkit-playsinline="true"
                 id="current-video"
                 className="size-64 origin-center scale-150 object-cover object-center"
                 onLoadedData={handleVideoLoad}
@@ -129,6 +148,8 @@ const Hero = () => {
             src={getVideoSrc(currentIndex)}
             loop
             muted
+            playsInline
+            webkit-playsinline="true"
             id="next-video"
             className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
             // onLoadedData={handleVideoLoad}
@@ -139,6 +160,8 @@ const Hero = () => {
             autoPlay
             loop
             muted
+            playsInline
+            webkit-playsinline="true"
             className={`absolute left-0 top-0 size-full object-cover object-center`}
             onLoadedData={handleVideoLoad}
           />
