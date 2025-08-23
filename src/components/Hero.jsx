@@ -98,6 +98,39 @@ const Hero = () => {
 
   useGSAP(
     () => {
+      // Animate the "designing" text on page load
+      if (!isLoading) {
+        gsap.fromTo(
+          "#designing-text",
+          {
+            opacity: 0,
+            y: 50,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1.2,
+            delay: 0.3,
+            ease: "power2.out",
+          }
+        );
+
+        gsap.fromTo(
+          "#architecture-text",
+          {
+            opacity: 0,
+            x: 50,
+          },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 1.2,
+            delay: 0.3,
+            ease: "power2.out",
+          }
+        );
+      }
+
       // GSAP animations can be added here
       // Use hasClicked so we wait to commit state until after animation
       if (hasClicked) {
@@ -128,27 +161,8 @@ const Hero = () => {
         });
       }
     },
-    { dependencies: [hasClicked], revertOnUpdate: true }
+    { dependencies: [hasClicked, isLoading], revertOnUpdate: true }
   );
-
-  useGSAP(() => {
-    // GSAP animations can be added here
-    gsap.set("#video-frame", {
-      clipPath: "polygon(14% 0%, 72% 0%, 90% 90%, 0% 100%)",
-      borderRadius: "0 0 40% 10%",
-    });
-    gsap.from("#video-frame", {
-      clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-      borderRadius: "0 0 0 0",
-      ease: "power1.inOut",
-      scrollTrigger: {
-        trigger: "#video-frame",
-        start: "center center",
-        end: "bottom center",
-        scrub: true,
-      },
-    });
-  });
 
   const getVideoSrc = (Index) => {
     // Use absolute path for files in Vite `public/` so assets resolve correctly
@@ -227,25 +241,36 @@ const Hero = () => {
                 playsInline
                 webkit-playsinline="true"
                 onLoadedData={handleBackgroundLoaded}
-                className={`absolute left-0 top-0 size-full object-cover object-center`}
+                className={`absolute left-0 top-0 z-10 size-full object-cover object-center`}
               />
             </>
           )}
           {isMobile && (
             <div
-              className="absolute left-0 top-0 size-full bg-cover bg-center bg-no-repeat"
+              className="absolute left-0 top-0 z-10 size-full bg-cover bg-center bg-no-repeat"
               style={{
                 backgroundImage: `url(${getImageSrc(currentIndex)})`,
               }}
             />
           )}
+          {/* Semi-transparent black overlay using rgba */}
+          <div
+            className="absolute left-0 top-0 z-20 size-full"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}
+          ></div>
         </div>
-        <h1 className="display-font hero-heading absolute bottom-5 right-5 z-40 !text-stone-200 text-shadow-soft-xl">
-          Archi<b>t</b>ecture
+        <h1
+          id="architecture-text"
+          className="display-font hero-heading !text-6xl absolute bottom-5 right-5 z-40 !text-stone-200 text-shadow-soft-xl"
+        >
+          Architecture
         </h1>
         <div className="absolute bottom-0 left-0 top-0 z-40 size-full">
-          <div className="mt-24 px-5 sm:px-10">
-            <h1 className="display-font hero-heading !text-blue-gray-200 text-shadow-soft-xl">
+          <div className="mt-60 md:ml-12 px-8 sm:px-16">
+            <h1
+              id="designing-text"
+              className="display-font hero-heading !text-blue-gray-200 text-shadow-soft-xl"
+            >
               designing
             </h1>
             <p className="mb-5 max-w-84 font-body text-white text-xl text-shadow-soft-lg">
@@ -260,9 +285,6 @@ const Hero = () => {
           </div>
         </div>
       </div>
-      <h1 className="display-font hero-heading absolute bottom-5 right-5 text-stone-200 text-shadow-soft-lg">
-        Archi<b>t</b>ecture
-      </h1>
     </div>
   );
 };
