@@ -51,7 +51,7 @@ const NewHero = () => {
   return (
     <section
       id="home"
-      className="relative min-h-[92vh] w-screen overflow-hidden"
+      className="dl-force-dark relative min-h-[92vh] w-screen overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

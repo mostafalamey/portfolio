@@ -30,7 +30,7 @@ const Features = () => {
                 decoding="async"
               />
               <div className="absolute inset-0 dl-scrim-soft opacity-75" />
-              <div className="absolute inset-x-0 bottom-0 p-6">
+              <div className="dl-on-media absolute inset-x-0 bottom-0 p-6">
                 <p className="dl-eyebrow">Signature</p>
                 <h3 className="mt-2 text-2xl font-semibold text-fg">
                   A bold concept, rendered quietly
@@ -71,7 +71,7 @@ const Features = () => {
                     decoding="async"
                   />
                   <div className="absolute inset-0 dl-scrim-soft opacity-75" />
-                  <div className="absolute inset-x-0 bottom-0 p-6">
+                  <div className="dl-on-media absolute inset-x-0 bottom-0 p-6">
                     <p className="dl-eyebrow">{c.eyebrow}</p>
                     <h3 className="mt-2 text-lg font-semibold text-fg">
                       {c.title}

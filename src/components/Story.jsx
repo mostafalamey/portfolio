@@ -68,7 +68,7 @@ const Story = () => {
                 </span>
               </button>
 
-              <div className="absolute inset-x-0 bottom-0 p-6">
+              <div className="dl-on-media absolute inset-x-0 bottom-0 p-6">
                 <p className="dl-eyebrow">Featured</p>
                 <p className="mt-2 text-lg font-semibold text-fg">
                   A controlled media tile

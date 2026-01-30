@@ -54,7 +54,7 @@ const Contact = () => {
             />
             <div className="absolute inset-0 dl-scrim-strong" />
 
-            <div className="absolute inset-0 flex items-center">
+            <div className="dl-on-media absolute inset-0 flex items-center">
               <div className="dl-container">
                 <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
                   <div className="lg:col-span-5">

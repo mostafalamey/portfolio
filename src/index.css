@@ -77,9 +77,50 @@ html[data-theme="light"] {
   --overlay-weak: rgba(0, 0, 0, 0.04);
   --overlay-strong: rgba(0, 0, 0, 0.07);
 
-  --scrim-base: 255, 255, 255;
+  /* Keep media overlays dark in all themes (do not override --scrim-base) */
   --ts-soft: 0 2px 10px rgba(255, 255, 255, 0.45);
   --ts-soft-lg: 0 8px 22px rgba(255, 255, 255, 0.55);
+}
+
+/* Ensure media (images/video tiles) always get dark overlays + readable light text */
+.dl-on-media {
+  --color-fg: #f2f4f7;
+  --color-fg-2: #d4dbe5;
+  --color-fg-muted: #b5c0cf;
+  --color-fg-subtle: #93a0b3;
+  --ts-soft: 0 2px 4px rgba(0, 0, 0, 0.34);
+  --ts-soft-lg: 0 6px 16px rgba(0, 0, 0, 0.46);
+}
+
+/* Force a section to remain dark even when the site is in light mode */
+.dl-force-dark {
+  color-scheme: dark;
+
+  --color-ink-950: #0e1116;
+  --color-ink-900: #101620;
+  --color-ink-800: #1a212b;
+  --color-ink-700: #222b36;
+  --color-ink-600: #2a3441;
+  --color-ink-500: #323d4b;
+  --color-ink-400: #465361;
+
+  --color-fg: #f2f4f7;
+  --color-fg-2: #c8d0da;
+  --color-fg-muted: #8c98a8;
+  --color-fg-subtle: #697587;
+
+  --shadow-card: 0 6px 16px rgba(0, 0, 0, 0.22);
+  --shadow-card-hover: 0 12px 32px rgba(0, 0, 0, 0.28);
+  --glass-bg: rgba(26, 33, 43, 0.55);
+  --nav-bg: rgba(26, 33, 43, 0.45);
+  --nav-bg-scrolled: rgba(16, 22, 32, 0.72);
+  --overlay-weak: rgba(255, 255, 255, 0.05);
+  --overlay-strong: rgba(255, 255, 255, 0.1);
+
+  /* Explicitly keep image scrims dark */
+  --scrim-base: 10, 12, 16;
+  --ts-soft: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --ts-soft-lg: 0 4px 10px rgba(0, 0, 0, 0.42);
 }
 
 body {
