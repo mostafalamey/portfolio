@@ -72,6 +72,47 @@ const NavBar = () => {
     setIsMenuOpen(false);
   };
 
+  const onToggleTheme = (e) => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+
+    const button = e.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    const maxX = Math.max(x, window.innerWidth - x);
+    const maxY = Math.max(y, window.innerHeight - y);
+    const r = Math.ceil(Math.hypot(maxX, maxY));
+
+    const root = document.documentElement;
+    root.style.setProperty("--vt-x", `${x}px`);
+    root.style.setProperty("--vt-y", `${y}px`);
+    root.style.setProperty("--vt-r", `${r}px`);
+
+    const apply = () => {
+      root.dataset.theme = nextTheme;
+      try {
+        localStorage.setItem("theme", nextTheme);
+      } catch {
+        // ignore storage errors
+      }
+      setTheme(nextTheme);
+    };
+
+    const canTransition =
+      typeof document !== "undefined" &&
+      typeof document.startViewTransition === "function" &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (canTransition) {
+      document.startViewTransition(() => {
+        apply();
+      });
+      return;
+    }
+
+    apply();
+  };
+
   return (
     <div
       ref={navContainerRef}
@@ -112,7 +153,7 @@ const NavBar = () => {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+            onClick={onToggleTheme}
             className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-ink-600/60 bg-[var(--overlay-weak)] text-fg transition hover:bg-[var(--overlay-strong)]"
             aria-label={
               theme === "dark"

@@ -43,6 +43,48 @@
   --scrim-base: 10, 12, 16;
   --ts-soft: 0 2px 4px rgba(0, 0, 0, 0.3);
   --ts-soft-lg: 0 4px 10px rgba(0, 0, 0, 0.42);
+
+  /* View Transitions (theme reveal) */
+  --vt-x: 50vw;
+  --vt-y: 10vh;
+  --vt-r: 120vmax;
+}
+
+html {
+  view-transition-name: root;
+}
+
+@keyframes vt-theme-reveal {
+  from {
+    clip-path: circle(0px at var(--vt-x) var(--vt-y));
+  }
+  to {
+    clip-path: circle(var(--vt-r) at var(--vt-x) var(--vt-y));
+  }
+}
+
+@keyframes vt-theme-fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.85;
+  }
+}
+
+::view-transition-old(root) {
+  animation: vt-theme-fade 520ms ease-out both;
+}
+
+::view-transition-new(root) {
+  animation: vt-theme-reveal 1220ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
 }
 
 html[data-theme="dark"] {
