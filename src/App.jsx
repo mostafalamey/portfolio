@@ -5,15 +5,19 @@ import Story from "./components/Story";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import NewHero from "./components/NewHero";
+import Gallery from "./components/Gallery";
+import Insights from "./components/Insights";
 
 const App = () => {
   return (
-    <main className="relative min-h-screen w-screen overflow-x-hidden">
+    <main className="relative min-h-screen w-screen overflow-x-hidden bg-ink-950">
       <NavBar />
       <NewHero />
-      <About />
       <Features />
+      <Gallery />
+      <About />
       <Story />
+      <Insights />
       <Contact />
       <Footer />
     </main>

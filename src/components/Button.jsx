@@ -7,16 +7,28 @@ const Button = ({
   leftIcon,
   containerClass,
   onClick,
+  variant = "primary",
+  type = "button",
+  disabled = false,
 }) => {
+  const base = "dl-btn";
+  const variants = {
+    primary: "dl-btn-primary",
+    secondary: "dl-btn-secondary",
+    ghost: "dl-btn-ghost",
+  };
+
   return (
     <button
       id={id}
       onClick={onClick}
-      className={`group relative z-10 w-fit flex items-center cursor-pointer overflow-hidden rounded-full bg-stone-100 px-7 py-3 text-stone-800 hover:bg-stone-200 transition-colors duration-300 ${containerClass}`}
+      type={type}
+      disabled={disabled}
+      className={`${base} ${variants[variant] ?? variants.primary} disabled:opacity-60 disabled:cursor-not-allowed ${containerClass}`}
     >
       {leftIcon}
-      <span className="relative overflow-hidden font-accent text-xs uppercase font-medium">
-        <div>{title}</div>
+      <span className="relative overflow-hidden font-accent text-xs uppercase tracking-[0.14em]">
+        {title}
       </span>
       {rightIcon}
     </button>

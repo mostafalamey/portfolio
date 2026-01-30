@@ -1,290 +1,153 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import Button from "./Button";
+
+const slides = [
+  {
+    img: "/img/gallery-1.png",
+    eyebrow: "Featured",
+    title: "Design spaces with quiet confidence",
+    subtitle:
+      "A dark editorial canvas with warm accents, crafted for visual storytelling and precision.",
+  },
+  {
+    img: "/img/gallery-3.png",
+    eyebrow: "Portfolio",
+    title: "Cinematic imagery. Measured typography.",
+    subtitle:
+      "Layered surfaces, soft borders, and deliberate contrast—built to make work feel premium.",
+  },
+  {
+    img: "/img/gallery-5.png",
+    eyebrow: "Process",
+    title: "From concept to detail",
+    subtitle:
+      "A calm interface with subtle motion, clear hierarchy, and strong, consistent components.",
+  },
+];
 
 const NewHero = () => {
-  const getImageSrc = (index) => {
-    const imageMap = {
-      0: "/img/gallery-1.png",
-      1: "/img/gallery-2.png",
-      2: "/img/gallery-3.png",
-      3: "/img/gallery-4.png",
-      4: "/img/gallery-5.png",
-    };
-    return imageMap[index] || imageMap[0];
-  };
+  const [active, setActive] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const reducedMotion = useRef(false);
 
-  // Properly initialize React refs
-  const carouselRef = useRef(null);
-  const listRef = useRef(null);
-  const thumbnailRef = useRef(null);
+  const next = () => setActive((i) => (i + 1) % slides.length);
 
-  // Auto-play state and refs
-  const autoPlayTimer = useRef(null);
-  const inactivityTimer = useRef(null);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
-
-  const timeRunning = 2000;
-  const autoPlayInterval = 10000; // 10 seconds between auto transitions
-  const inactivityDelay = 6000; // 6 seconds of inactivity before auto-play starts
-  let runTimeOut;
-
-  // Auto-play functions
-  const startAutoPlay = () => {
-    if (autoPlayTimer.current) clearInterval(autoPlayTimer.current);
-    setIsAutoPlaying(true);
-    autoPlayTimer.current = setInterval(() => {
-      handleNext(true); // Pass true to indicate auto-play
-    }, autoPlayInterval);
-  };
-
-  const stopAutoPlay = () => {
-    if (autoPlayTimer.current) {
-      clearInterval(autoPlayTimer.current);
-      autoPlayTimer.current = null;
-    }
-    setIsAutoPlaying(false);
-  };
-
-  const resetInactivityTimer = () => {
-    // Clear existing timers
-    if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
-    stopAutoPlay();
-
-    // Start new inactivity timer
-    inactivityTimer.current = setTimeout(() => {
-      startAutoPlay();
-    }, inactivityDelay);
-  };
-
-  const handleNext = (isAutoPlay = false) => {
-    if (!listRef.current || !thumbnailRef.current || !carouselRef.current)
-      return;
-
-    // Reset inactivity timer only for manual interactions
-    if (!isAutoPlay) {
-      resetInactivityTimer();
-    }
-
-    // Get current items
-    const items = listRef.current.querySelectorAll(".item");
-    const thumbnails = thumbnailRef.current.querySelectorAll(".item");
-
-    if (items.length === 0 || thumbnails.length === 0) return;
-
-    // Logic for handling next button click
-    listRef.current.appendChild(items[0]);
-    thumbnailRef.current.appendChild(thumbnails[0]);
-    carouselRef.current.classList.add("next");
-
-    clearTimeout(runTimeOut);
-    runTimeOut = setTimeout(() => {
-      if (carouselRef.current) {
-        carouselRef.current.classList.remove("next");
-      }
-    }, timeRunning);
-  };
-
-  const handlePrev = () => {
-    if (!listRef.current || !thumbnailRef.current || !carouselRef.current)
-      return;
-
-    // Reset inactivity timer for manual interaction
-    resetInactivityTimer();
-
-    // Get current items
-    const items = listRef.current.querySelectorAll(".item");
-    const thumbnails = thumbnailRef.current.querySelectorAll(".item");
-
-    if (items.length === 0 || thumbnails.length === 0) return;
-
-    // Logic for handling previous button click
-    listRef.current.prepend(items[items.length - 1]);
-    thumbnailRef.current.prepend(thumbnails[thumbnails.length - 1]);
-    carouselRef.current.classList.add("prev");
-
-    clearTimeout(runTimeOut);
-    runTimeOut = setTimeout(() => {
-      if (carouselRef.current) {
-        carouselRef.current.classList.remove("prev");
-      }
-    }, timeRunning);
-  };
-
-  // Initialize auto-play and cleanup timers
   useEffect(() => {
-    // Start the inactivity timer when component mounts
-    resetInactivityTimer();
-
-    // Add event listeners to detect user activity
-    const handleUserActivity = () => {
-      resetInactivityTimer();
-    };
-
-    // Listen for mouse movements and clicks on the carousel
-    const carouselElement = carouselRef.current;
-    if (carouselElement) {
-      carouselElement.addEventListener("mousemove", handleUserActivity);
-      carouselElement.addEventListener("click", handleUserActivity);
-      carouselElement.addEventListener("mouseenter", stopAutoPlay);
-      carouselElement.addEventListener("mouseleave", resetInactivityTimer);
-    }
-
-    return () => {
-      // Cleanup all timers
-      if (runTimeOut) clearTimeout(runTimeOut);
-      if (autoPlayTimer.current) clearInterval(autoPlayTimer.current);
-      if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
-
-      // Remove event listeners
-      if (carouselElement) {
-        carouselElement.removeEventListener("mousemove", handleUserActivity);
-        carouselElement.removeEventListener("click", handleUserActivity);
-        carouselElement.removeEventListener("mouseenter", stopAutoPlay);
-        carouselElement.removeEventListener("mouseleave", resetInactivityTimer);
-      }
-    };
+    if (typeof window === "undefined") return;
+    reducedMotion.current = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
   }, []);
 
+  useEffect(() => {
+    if (reducedMotion.current) return;
+    if (isPaused) return;
+    const id = window.setInterval(next, 9000);
+    return () => window.clearInterval(id);
+  }, [isPaused]);
+
+  const current = useMemo(() => slides[active], [active]);
+
   return (
-    <div className="carousel" ref={carouselRef}>
-      <div ref={listRef} className="list">
-        <div className="item">
-          <img src={getImageSrc(0)} alt="Hero Background" />
-          <div className="content">
-            <div className="author">Sodic</div>
-            <div className="title">Beverly Hills</div>
-            <div className="topic">Residential</div>
-            <div className="des">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
+    <section
+      id="home"
+      className="relative min-h-[92vh] w-screen overflow-hidden"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      <div className="absolute inset-0">
+        {slides.map((s, i) => (
+          <div
+            key={s.img}
+            className={`absolute inset-0 transition-opacity duration-700 ${
+              i === active ? "opacity-100" : "opacity-0"
+            }`}
+            aria-hidden={i === active ? "false" : "true"}
+          >
+            <img
+              src={s.img}
+              alt=""
+              className="h-full w-full object-cover object-center"
+              loading={i === 0 ? "eager" : "lazy"}
+              decoding="async"
+            />
+            <div className="dl-scrim-strong absolute inset-0" />
+          </div>
+        ))}
+      </div>
+
+      <div className="relative z-10">
+        <div className="dl-container pt-32 sm:pt-36">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="dl-eyebrow text-shadow-soft">{current.eyebrow}</p>
+            <h1 className="mt-4 display-font text-4xl font-semibold leading-tight text-fg text-shadow-soft-lg sm:text-5xl md:text-6xl">
+              {current.title}
+            </h1>
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-fg-2 sm:text-lg">
+              {current.subtitle}
+            </p>
+
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Button
+                title="View selected work"
+                variant="primary"
+                onClick={() =>
+                  document
+                    .getElementById("projects")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              />
+              <Button
+                title="Start a conversation"
+                variant="ghost"
+                onClick={() =>
+                  document
+                    .getElementById("contact")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              />
             </div>
-            <div className="buttons">
-              <button>View Project</button>
-              <button>Contact Us</button>
+
+            <div
+              className="mt-10 flex items-center justify-center gap-2"
+              aria-label="Hero slides"
+            >
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setActive(i)}
+                  className={`h-2 w-2 rounded-full transition ${
+                    i === active ? "bg-fg" : "bg-white/25 hover:bg-white/40"
+                  }`}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
             </div>
           </div>
         </div>
-        <div className="item">
-          <img src={getImageSrc(1)} alt="Hero Background" />
-          <div className="content">
-            <div className="author">Dorra</div>
-            <div className="title">Avenu 22</div>
-            <div className="topic">Commercial</div>
-            <div className="des">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
-            </div>
-            <div className="buttons">
-              <button>View Project</button>
-              <button>Contact Us</button>
-            </div>
-          </div>
-        </div>
-        <div className="item">
-          <img src={getImageSrc(2)} alt="Hero Background" />
-          <div className="content">
-            <div className="author">New Giza</div>
-            <div className="title">NG University</div>
-            <div className="topic">Public & Cultural</div>
-            <div className="des">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
-            </div>
-            <div className="buttons">
-              <button>View Project</button>
-              <button>Contact Us</button>
-            </div>
-          </div>
-        </div>
-        <div className="item">
-          <img src={getImageSrc(3)} alt="Hero Background" />
-          <div className="content">
-            <div className="author">Mabany Edris</div>
-            <div className="title">Gate Plaza</div>
-            <div className="topic">Commercial</div>
-            <div className="des">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
-            </div>
-            <div className="buttons">
-              <button>View Project</button>
-              <button>Contact Us</button>
-            </div>
-          </div>
-        </div>
-        <div className="item">
-          <img src={getImageSrc(4)} alt="Hero Background" />
-          <div className="content">
-            <div className="author">Mabany Edris</div>
-            <div className="title">Gate Plaza</div>
-            <div className="topic">Commercial</div>
-            <div className="des">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
-            </div>
-            <div className="buttons">
-              <button>View Project</button>
-              <button>Contact Us</button>
-            </div>
+
+        <div className="dl-container pb-10 pt-12">
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[
+              { k: "25+", v: "Years shaping craft" },
+              { k: "90+", v: "Completed studies" },
+              { k: "50+", v: "Delivered outcomes" },
+            ].map((item) => (
+              <div
+                key={item.k}
+                className="dl-card dl-card-hover p-6 text-start"
+              >
+                <p className="display-font text-2xl font-semibold text-accent">
+                  {item.k}
+                </p>
+                <p className="mt-2 text-sm text-fg-muted">{item.v}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-      <div className="thumbnail" ref={thumbnailRef}>
-        <div className="item shadow-soft-lg">
-          <img src={getImageSrc(1)} alt="Thumbnail 2" />
-          <div className="content">
-            <div className="title">Thumbnail 2</div>
-            <div className="des">A brief description of Thumbnail 2.</div>
-          </div>
-        </div>
-        <div className="item shadow-soft-lg">
-          <img src={getImageSrc(2)} alt="Thumbnail 3" />
-          <div className="content">
-            <div className="title">Thumbnail 3</div>
-            <div className="des">A brief description of Thumbnail 3.</div>
-          </div>
-        </div>
-        <div className="item shadow-soft-lg">
-          <img src={getImageSrc(3)} alt="Thumbnail 4" />
-          <div className="content">
-            <div className="title">Thumbnail 4</div>
-            <div className="des">A brief description of Thumbnail 4.</div>
-          </div>
-        </div>
-        <div className="item shadow-soft-lg">
-          <img src={getImageSrc(4)} alt="Thumbnail 4" />
-          <div className="content">
-            <div className="title">Thumbnail 4</div>
-            <div className="des">A brief description of Thumbnail 4.</div>
-          </div>
-        </div>
-        <div className="item shadow-soft-lg">
-          <img src={getImageSrc(0)} alt="Thumbnail 1" />
-          <div className="content">
-            <div className="title">New Slider</div>
-            <div className="des">A brief description of the new slider.</div>
-          </div>
-        </div>
-      </div>
-      <div className="arrows">
-        <button className="prev" onClick={handlePrev}>
-          {"<"}
-        </button>
-        <button className="next" onClick={handleNext}>
-          {">"}
-        </button>
-      </div>
-      <div className="time"></div>
-    </div>
+    </section>
   );
 };
 

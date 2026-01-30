@@ -1,64 +1,82 @@
-import AnimatedTitle from "./AnimatedTitle";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
-
 const About = () => {
-  // GSAP animation for the About section
-  useGSAP(() => {
-    // Animation for the clip mask
-    const clipAnimation = gsap.timeline({
-      scrollTrigger: {
-        trigger: "#clip",
-        start: "center center",
-        end: "+=800 center",
-        scrub: 0.5,
-        pin: true,
-        pinSpacing: true,
-      },
-    });
-
-    clipAnimation.to(".mask-clip-path", {
-      width: "100vw",
-      height: "100vh",
-      borderRadius: "0",
-      duration: 1,
-      ease: "power1.inOut",
-    });
-  });
-
   return (
-    <div id="about" className="min-h-screen w-screen">
-      <div className="relative mb-8 mt-36 flex flex-col items-center gap-5">
-        <h2 className="text-sm uppercase md:text-[10px] font-accent text-stone-600">
-          About Our Studio
-        </h2>
-        <AnimatedTitle
-          title="Craf<b>t</b>ing Spaces that <br /> Insp<b>i</b>re and Transform"
-          containerClass="mt-5 !text-stone-800 text-center"
-        />
-        <div className="about-subtext">
-          <p>
-            We believe architecture shapes the way we live, work, and connect.
-          </p>
-          <p>
-            Our designs blend innovation with sustainability and timeless
-            beauty.
-          </p>
+    <section id="approach" className="dl-section">
+      <div className="dl-container">
+        <div className="dl-card p-8 sm:p-10">
+          <div className="grid gap-10 md:grid-cols-12 md:items-center">
+            <div className="md:col-span-5">
+              <p className="dl-eyebrow">Approach</p>
+              <h2 className="mt-4 display-font text-4xl font-semibold leading-tight text-fg sm:text-5xl">
+                Built on clarity,
+                <span className="text-accent"> refined</span> by detail.
+              </h2>
+              <p className="mt-5 text-sm leading-relaxed text-fg-2 sm:text-base">
+                A dark editorial framework that lets imagery lead, while
+                typography and spacing provide structure.
+              </p>
+            </div>
+
+            <div className="md:col-span-7">
+              <div className="grid gap-4 sm:grid-cols-3">
+                {[
+                  { k: "01", v: "Intent" },
+                  { k: "02", v: "Craft" },
+                  { k: "03", v: "Delivery" },
+                ].map((item) => (
+                  <div
+                    key={item.k}
+                    className="rounded-2xl border border-ink-600/60 bg-ink-800/60 p-6"
+                  >
+                    <p className="dl-eyebrow">Step {item.k}</p>
+                    <p className="mt-2 text-base font-semibold text-fg">
+                      {item.v}
+                    </p>
+                    <p className="mt-2 text-sm text-fg-muted">
+                      A concise, repeatable structure.
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-2xl border border-ink-600/60 bg-ink-900/40 p-6">
+                  <p className="display-font text-3xl font-semibold text-accent">
+                    25+
+                  </p>
+                  <p className="mt-2 text-sm text-fg-muted">
+                    Years of combined experience
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-ink-600/60 bg-ink-900/40 p-6">
+                  <p className="display-font text-3xl font-semibold text-accent">
+                    100+
+                  </p>
+                  <p className="mt-2 text-sm text-fg-muted">
+                    Delivered outputs
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            { title: "Materiality", desc: "Warm, tactile, and intentional." },
+            { title: "Proportion", desc: "Balanced composition and rhythm." },
+            { title: "Light", desc: "Contrast that reveals detail." },
+            { title: "Craft", desc: "Measured decisions, consistent output." },
+          ].map((item) => (
+            <div key={item.title} className="dl-card dl-card-hover p-6">
+              <p className="text-sm font-semibold text-fg">{item.title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-fg-muted">
+                {item.desc}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
-      <div id="clip" className="h-dvh w-screen">
-        <div className="mask-clip-path about-image">
-          <img
-            src="/img/about.webp"
-            alt="Background"
-            className="absolute left-0 top-0 size-full object-cover"
-          />
-        </div>
-      </div>
-    </div>
+    </section>
   );
 };
 
