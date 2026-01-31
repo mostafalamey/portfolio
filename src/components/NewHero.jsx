@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Button from "./Button";
+import useScrollReveal from "../hooks/useScrollReveal";
 
 const slides = [
   {
@@ -12,9 +13,9 @@ const slides = [
   {
     img: "/img/gallery-3.png",
     eyebrow: "Portfolio",
-    title: "Cinematic imagery. Measured typography.",
+    title: "Cinematic detailes. Measured beauty.",
     subtitle:
-      "Layered surfaces, soft borders, and deliberate contrast—built to make work feel premium.",
+      "Layered surfaces, soft borders, and deliberate contrast - built to make work feel premium.",
   },
   {
     img: "/img/gallery-5.png",
@@ -28,7 +29,9 @@ const slides = [
 const NewHero = () => {
   const [active, setActive] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const reducedMotion = useRef(false);
+  const statsRef = useScrollReveal();
 
   const next = () => setActive((i) => (i + 1) % slides.length);
 
@@ -37,6 +40,10 @@ const NewHero = () => {
     reducedMotion.current = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+
+    // Trigger entrance animation after mount
+    const timer = setTimeout(() => setIsLoaded(true), 100);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -59,7 +66,7 @@ const NewHero = () => {
         {slides.map((s, i) => (
           <div
             key={s.img}
-            className={`absolute inset-0 transition-opacity duration-700 ${
+            className={`absolute inset-0 transition-opacity duration-1000 ease-out ${
               i === active ? "opacity-100" : "opacity-0"
             }`}
             aria-hidden={i === active ? "false" : "true"}
@@ -67,7 +74,7 @@ const NewHero = () => {
             <img
               src={s.img}
               alt=""
-              className="h-full w-full object-cover object-center"
+              className="h-full w-full object-cover object-center dl-kenburns"
               loading={i === 0 ? "eager" : "lazy"}
               decoding="async"
             />
@@ -77,17 +84,47 @@ const NewHero = () => {
       </div>
 
       <div className="relative z-10">
-        <div className="dl-container pt-32 sm:pt-36">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="dl-eyebrow text-shadow-soft">{current.eyebrow}</p>
-            <h1 className="mt-4 display-font text-4xl font-semibold leading-tight text-fg text-shadow-soft-lg sm:text-5xl md:text-6xl">
+        <div className="dl-container pt-40 sm:pt-48">
+          <div className="mx-auto max-w-6xl text-center">
+            <p
+              className={`dl-eyebrow text-shadow-soft transition-all duration-700 ease-out ${
+                isLoaded
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+              style={{ transitionDelay: "200ms" }}
+            >
+              {current.eyebrow}
+            </p>
+            <h1
+              className={`mt-5 display-font text-6xl font-semibold leading-[0.90] text-fg text-shadow-soft-lg md:text-6xl lg:text-8xl transition-all duration-1000 ease-out ${
+                isLoaded
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-8"
+              }`}
+              style={{ transitionDelay: "400ms" }}
+            >
               {current.title}
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-fg-2 sm:text-lg">
+            <p
+              className={`mx-auto mt-8 max-w-2xl text-xs leading-relaxed text-fg-2 sm:text-sm transition-all duration-700 ease-out ${
+                isLoaded
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+              style={{ transitionDelay: "600ms" }}
+            >
               {current.subtitle}
             </p>
 
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div
+              className={`mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row transition-all duration-700 ease-out ${
+                isLoaded
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+              style={{ transitionDelay: "800ms" }}
+            >
               <Button
                 title="View selected work"
                 variant="primary"
@@ -109,7 +146,12 @@ const NewHero = () => {
             </div>
 
             <div
-              className="mt-10 flex items-center justify-center gap-2"
+              className={`mt-14 flex items-center justify-center gap-3 transition-all duration-700 ease-out ${
+                isLoaded
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+              style={{ transitionDelay: "1000ms" }}
               aria-label="Hero slides"
             >
               {slides.map((_, i) => (
@@ -117,8 +159,10 @@ const NewHero = () => {
                   key={i}
                   type="button"
                   onClick={() => setActive(i)}
-                  className={`h-2 w-2 rounded-full transition ${
-                    i === active ? "bg-fg" : "bg-white/25 hover:bg-white/40"
+                  className={`h-1.5 rounded-[var(--radius-sm)] transition-all duration-500 ${
+                    i === active
+                      ? "bg-fg w-12"
+                      : "bg-white/25 hover:bg-white/40 w-8"
                   }`}
                   aria-label={`Go to slide ${i + 1}`}
                 />
@@ -127,8 +171,8 @@ const NewHero = () => {
           </div>
         </div>
 
-        <div className="dl-container pb-10 pt-12">
-          <div className="grid gap-4 sm:grid-cols-3">
+        <div className="dl-container pb-16 pt-20" ref={statsRef}>
+          <div className="grid gap-5 sm:grid-cols-3" data-reveal-stagger>
             {[
               { k: "25+", v: "Years shaping craft" },
               { k: "90+", v: "Completed studies" },
@@ -136,12 +180,13 @@ const NewHero = () => {
             ].map((item) => (
               <div
                 key={item.k}
-                className="dl-card dl-card-hover p-6 text-start"
+                className="dl-card dl-card-hover dl-tilt p-8 text-start dl-border-glow"
+                data-reveal="scale"
               >
-                <p className="display-font text-2xl font-semibold text-accent">
+                <p className="display-font text-3xl font-semibold dl-text-gradient">
                   {item.k}
                 </p>
-                <p className="mt-2 text-sm text-fg-muted">{item.v}</p>
+                <p className="mt-3 text-xs text-fg-muted">{item.v}</p>
               </div>
             ))}
           </div>

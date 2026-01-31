@@ -17,25 +17,28 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="border-t border-ink-600/60 bg-ink-950">
-      <div className="dl-container py-14">
-        <div className="grid gap-10 md:grid-cols-12">
+    <footer className="border-t border-ink-600/40 bg-ink-950">
+      <div className="dl-container py-20">
+        <div className="grid gap-14 md:grid-cols-12">
           <div className="md:col-span-4">
             <div className="flex items-center gap-3">
-              <img src="/img/logo.png" alt="Logo" className="h-9 w-9" />
-              <p className="text-sm font-semibold text-fg">Portfolio</p>
+              <img
+                src="/img/logo-elegant.png"
+                alt="Logo"
+                className="h-10 w-auto"
+              />
             </div>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-fg-muted">
+            <p className="mt-6 max-w-sm text-xs leading-relaxed text-fg-muted">
               A dark editorial system with restrained gold accents, designed for
               premium visual storytelling.
             </p>
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-8 flex items-center gap-3">
               {social.map((s) => (
                 <a
                   key={s.label}
                   href={s.href}
                   aria-label={s.label}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-ink-600/60 bg-white/5 text-fg-muted transition hover:bg-white/10 hover:text-fg"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-ink-600/40 bg-transparent text-fg-muted transition-all duration-300 hover:border-accent/50 hover:text-accent hover:-translate-y-1"
                 >
                   {s.icon}
                 </a>
@@ -43,10 +46,10 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 md:col-span-5">
+          <div className="grid gap-10 sm:grid-cols-2 md:col-span-5">
             <div>
               <p className="dl-eyebrow">Navigate</p>
-              <div className="mt-4 flex flex-col gap-2">
+              <div className="mt-5 flex flex-col gap-3">
                 {[
                   { label: "Home", href: "#home" },
                   { label: "Work", href: "#projects" },
@@ -56,7 +59,7 @@ const Footer = () => {
                   <a
                     key={l.href}
                     href={l.href}
-                    className="text-sm text-fg-2 transition hover:text-fg"
+                    className="text-xs text-fg-muted transition-all duration-300 hover:text-fg hover:translate-x-1 dl-link-hover"
                   >
                     {l.label}
                   </a>
@@ -65,7 +68,7 @@ const Footer = () => {
             </div>
             <div>
               <p className="dl-eyebrow">Links</p>
-              <div className="mt-4 flex flex-col gap-2">
+              <div className="mt-5 flex flex-col gap-3">
                 {[
                   { label: "Privacy", href: "#" },
                   { label: "Terms", href: "#" },
@@ -75,7 +78,7 @@ const Footer = () => {
                   <a
                     key={l.label}
                     href={l.href}
-                    className="text-sm text-fg-2 transition hover:text-fg"
+                    className="text-xs text-fg-muted transition-all duration-300 hover:text-fg hover:translate-x-1 dl-link-hover"
                   >
                     {l.label}
                   </a>
@@ -86,20 +89,20 @@ const Footer = () => {
 
           <div className="md:col-span-3">
             <p className="dl-eyebrow">Newsletter</p>
-            <p className="mt-4 text-sm text-fg-muted">
+            <p className="mt-5 text-xs text-fg-muted">
               Occasional updates. No spam.
             </p>
-            <form className="mt-4" onSubmit={(e) => e.preventDefault()}>
-              <div className="flex gap-2">
+            <form className="mt-5" onSubmit={(e) => e.preventDefault()}>
+              <div className="flex gap-3">
                 <input
                   type="email"
-                  className="h-11 w-full rounded-xl border border-ink-600/60 bg-ink-900/40 px-4 text-sm text-fg placeholder:text-fg-subtle focus:border-accent focus:outline-none focus:ring-4 focus:ring-[rgba(200,155,60,0.22)]"
+                  className="h-11 w-full rounded-[var(--radius-sm)] border border-ink-600/50 bg-ink-900/40 px-4 text-sm text-fg placeholder:text-fg-subtle focus:border-accent focus:outline-none focus:ring-4 focus:ring-[rgba(200,155,60,0.22)]"
                   placeholder="Email address"
                   autoComplete="email"
                 />
                 <button
                   type="submit"
-                  className="dl-btn-primary h-11 px-4"
+                  className="dl-btn-primary h-11 px-5"
                   aria-label="Subscribe"
                 >
                   Join
@@ -109,7 +112,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-2 border-t border-ink-600/60 pt-6 text-xs text-fg-subtle sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-16 flex flex-col gap-3 border-t border-ink-600/40 pt-8 text-[10px] text-fg-subtle sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} All rights reserved.</p>
           <p>Built with a calm, editorial design system.</p>
         </div>

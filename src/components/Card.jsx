@@ -3,7 +3,7 @@ import React from "react";
 const Card = ({ src, title, description, isComingSoon, containerClass }) => {
   return (
     <div
-      className={`relative size-full overflow-hidden rounded-md ${containerClass}`}
+      className={`relative size-full overflow-hidden rounded-[var(--radius-md)] ${containerClass}`}
     >
       {src && (
         <video
@@ -30,7 +30,7 @@ const Card = ({ src, title, description, isComingSoon, containerClass }) => {
           )}
         </div>
         {isComingSoon && (
-          <span className="mt-2 inline-block rounded-full bg-cream-400 px-2 py-1 text-xs font-semibold text-stone-900">
+          <span className="mt-2 inline-block rounded-[var(--radius-sm)] bg-cream-400 px-2 py-1 text-xs font-semibold text-stone-900">
             Coming Soon
           </span>
         )}
